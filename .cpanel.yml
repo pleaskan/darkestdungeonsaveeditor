@@ -8,6 +8,4 @@ deployment:
     - /bin/mkdir -p ${DEPLOYPATH}fonts
     - /bin/cp fonts/* ${DEPLOYPATH}fonts/
     # ads.txt doit être à la RACINE du domaine (pleaskanworkshop.fr/ads.txt).
-    # Décommenter la ligne suivante une fois le vrai ID éditeur mis dans ads.txt
-    # (attention : elle remplace un éventuel ads.txt déjà présent à la racine) :
-    # - /bin/cp ads.txt /home/dowe8416/public_html/ads.txt
+    - /bin/cp ads.txt /home/dowe8416/public_html/ads.txt

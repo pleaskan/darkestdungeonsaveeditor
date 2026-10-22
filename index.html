@@ -16,9 +16,8 @@ gtag('consent', 'default', {
 });
 gtag('set', 'ads_data_redaction', true);
 </script>
-<!-- Validation AdSense : décommenter et mettre ton ID éditeur (le même que ADSENSE.client plus bas)
-<meta name="google-adsense-account" content="ca-pub-XXXXXXXXXXXXXXXX">
--->
+<!-- Validation du site par AdSense (même ID que ADSENSE.client plus bas) -->
+<meta name="google-adsense-account" content="ca-pub-7209616351160937">
 <title>Éditeur de sauvegarde Darkest Dungeon – or, bibelots, héros, bizarreries</title>
 <meta name="description" content="Éditeur de sauvegarde Darkest Dungeon gratuit, en français, directement dans le navigateur : modifie l'or et les héritages, ajoute des bibelots, monte tes héros niveau 6, gère les bizarreries. Liste complète des bibelots et bizarreries avec leurs effets.">
 <link rel="canonical" href="https://pleaskanworkshop.fr/darkestdungeonsaveeditor/">
@@ -373,8 +372,8 @@ footer p{margin:0;max-width:70ch}
 <script>
 /* ====== Configuration AdSense : remplace par tes identifiants ====== */
 const ADSENSE = {
-  client: 'ca-pub-XXXXXXXXXXXXXXXX',          // ton ID éditeur
-  slots: { top: '0000000000', side: '0000000000', bottom: '0000000000' } // IDs des blocs d'annonces
+  client: 'ca-pub-7209616351160937',          // ton ID éditeur
+  slots: { top: '0000000000', side: '0000000000', bottom: '0000000000' } // IDs des blocs d'annonces (AdSense > Annonces > Par bloc d'annonces) ; tant qu'ils sont à 0, l'emplacement est masqué
 };
 </script>
 <script>
@@ -861,13 +860,15 @@ function renderAll() { renderEstate(); renderHeroes(); renderTk(true); }
   if (!ok) { boxes.forEach(b => { if (dev) { b.classList.add('dev'); b.textContent = 'Emplacement publicitaire « ' + b.dataset.ad + ' » (configure ADSENSE dans index.html)'; } else b.classList.add('off'); }); if (dev) $('#side').classList.remove('hidden'), $('#shell').classList.add('has-side'); return; }
   const s = document.createElement('script'); s.async = true; s.crossOrigin = 'anonymous';
   s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE.client; document.head.appendChild(s);
-  const wide = matchMedia('(min-width:1180px)').matches;
+  const wide = matchMedia('(min-width:1180px)').matches; let wideOk = wide;
   boxes.forEach(b => {
     const k = b.dataset.ad; if (k === 'side' && !wide) { b.classList.add('off'); return; }
+    // Bloc pas encore créé dans AdSense (ID de bloc factice) : emplacement masqué, les annonces automatiques prennent le relais si activées
+    if (!/^[1-9]\d{9}$/.test(ADSENSE.slots[k] || '')) { b.classList.add('off'); if (k === 'side') wideOk = false; return; }
     b.innerHTML = `<ins class="adsbygoogle" data-ad-client="${ADSENSE.client}" data-ad-slot="${ADSENSE.slots[k]}" ${k === 'side' ? 'style="display:block;width:300px;height:600px"' : 'data-ad-format="auto" data-full-width-responsive="true"'}></ins>`;
     (window.adsbygoogle = window.adsbygoogle || []).push({});
   });
-  if (wide) { $('#side').classList.remove('hidden'); $('#shell').classList.add('has-side'); }
+  if (wideOk) { $('#side').classList.remove('hidden'); $('#shell').classList.add('has-side'); }
 })();
 /* « Gérer les cookies » : rouvre le gestionnaire de consentement Google (Funding Choices).
    La file d'attente garantit que l'appel part même si le gestionnaire n'a pas fini de charger. */
