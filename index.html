@@ -3,6 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script>
+/* Consent Mode v2 — doit rester AVANT tout script Google.
+   Par défaut, dans l'EEE, au Royaume-Uni et en Suisse : tout est refusé tant que
+   le gestionnaire de consentement certifié (AdSense > Confidentialité et messages) n'a pas reçu le choix du visiteur. */
+window.dataLayer = window.dataLayer || [];
+function gtag(){ dataLayer.push(arguments); }
+gtag('consent', 'default', {
+  ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied',
+  wait_for_update: 500,
+  region: ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH']
+});
+gtag('set', 'ads_data_redaction', true);
+</script>
+<!-- Validation AdSense : décommenter et mettre ton ID éditeur (le même que ADSENSE.client plus bas)
+<meta name="google-adsense-account" content="ca-pub-XXXXXXXXXXXXXXXX">
+-->
 <title>Éditeur de sauvegarde Darkest Dungeon – or, bibelots, héros, bizarreries</title>
 <meta name="description" content="Éditeur de sauvegarde Darkest Dungeon gratuit, en français, directement dans le navigateur : modifie l'or et les héritages, ajoute des bibelots, monte tes héros niveau 6, gère les bizarreries. Liste complète des bibelots et bizarreries avec leurs effets.">
 <link rel="canonical" href="https://pleaskanworkshop.fr/darkestdungeonsaveeditor/">
@@ -12,9 +28,8 @@
 <meta property="og:url" content="https://pleaskanworkshop.fr/darkestdungeonsaveeditor/">
 <meta name="theme-color" content="#0d0b0a">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/eb-garamond-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Éditeur de sauvegarde Darkest Dungeon","applicationCategory":"GameApplication","operatingSystem":"Windows, macOS, Linux (navigateur)","inLanguage":"fr","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"url":"https://pleaskanworkshop.fr/darkestdungeonsaveeditor/"}</script>
 <style>
 :root{
@@ -348,7 +363,7 @@ footer p{margin:0;max-width:70ch}
 <footer>
   <div class="wrap">
     <p>Outil non officiel, sans lien avec Red Hook Studios. Darkest Dungeon est une marque de Red Hook Studios. Garde toujours une copie de ta sauvegarde.</p>
-    <p><a href="confidentialite.html">Confidentialité et cookies</a>&emsp;<a href="#" id="consentLink">Gérer les cookies</a></p>
+    <p><a href="confidentialite.html#mentions-legales">Mentions légales</a>&emsp;<a href="confidentialite.html">Confidentialité et cookies</a>&emsp;<a href="#" id="consentLink">Gérer les cookies</a></p>
   </div>
 </footer>
 
@@ -854,7 +869,20 @@ function renderAll() { renderEstate(); renderHeroes(); renderTk(true); }
   });
   if (wide) { $('#side').classList.remove('hidden'); $('#shell').classList.add('has-side'); }
 })();
-$('#consentLink').onclick = e => { e.preventDefault(); if (window.googlefc && googlefc.showRevocationMessage) googlefc.showRevocationMessage(); else toast('Le gestionnaire de consentement s\'affiche une fois les publicités actives.'); };
+/* « Gérer les cookies » : rouvre le gestionnaire de consentement Google (Funding Choices).
+   La file d'attente garantit que l'appel part même si le gestionnaire n'a pas fini de charger. */
+$('#consentLink').onclick = e => {
+  e.preventDefault();
+  if (!/^ca-pub-\d{10,}$/.test(ADSENSE.client)) { toast('Aucune publicité ni cookie publicitaire n\'est actif pour le moment.'); return; }
+  window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+  googlefc.callbackQueue.push({ CONSENT_DATA_READY: () => googlefc.showRevocationMessage() });
+  setTimeout(() => { if (!(window.googlefc && googlefc.showRevocationMessage)) toast('Le gestionnaire de consentement est bloqué (bloqueur de publicité ?) : aucun cookie publicitaire n\'est déposé.'); }, 2500);
+};
+/* Lien « Gérer mes cookies » de la page confidentialité : ./?cookies */
+if (new URLSearchParams(location.search).has('cookies')) {
+  history.replaceState(null, '', location.pathname + location.hash);
+  $('#consentLink').click();
+}
 
 renderTk(); renderQ(); lockState(); route();
 })();
