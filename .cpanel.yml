@@ -9,3 +9,6 @@ deployment:
     - /bin/cp fonts/* ${DEPLOYPATH}fonts/
     # ads.txt doit être à la RACINE du domaine (pleaskanworkshop.fr/ads.txt).
     - /bin/cp ads.txt /home/dowe8416/public_html/ads.txt
+    # Polices de la page d'accueil du domaine (pleaskanworkshop.fr/assets/fonts/)
+    - /bin/mkdir -p /home/dowe8416/public_html/assets/fonts
+    - /bin/cp accueil-assets/*.woff2 /home/dowe8416/public_html/assets/fonts/
