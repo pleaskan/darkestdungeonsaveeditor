@@ -1,0 +1,7 @@
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/dowe8416/public_html/darkestdungeonsaveeditor/
+    - /bin/cp index.html $DEPLOYPATH
+    - /bin/cp confidentialite.html $DEPLOYPATH
+    - /bin/cp favicon.svg $DEPLOYPATH
+    - /bin/cp .htaccess $DEPLOYPATH
